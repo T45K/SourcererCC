@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.mondego.indexbased;
 
@@ -15,6 +15,7 @@ import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ import com.mondego.validation.TestGson;
 
 /**
  * @author vaibhavsaini
- * 
+ *
  */
 public class SearchManager {
     private static long clonePairsCount;
@@ -290,18 +291,25 @@ public class SearchManager {
         return null;
     }
 
+    /*
+     * "args" are made up of the following string
+     * args[0] = mode: init, index, or search
+     * args[1] = similarity threshold: base is 8
+     * args[2] = target dir (this must with "/")
+     * args[3] = sourcerer-cc.properties location
+     */
     public static void main(String[] args)
             throws IOException, ParseException, InterruptedException {
         long start_time = System.nanoTime();
         logger.info("user.dir is: " + System.getProperty("user.dir"));
-        logger.info("root dir is:" + System.getProperty("properties.rootDir"));
-        SearchManager.ROOT_DIR = System.getProperty("properties.rootDir");
-        FileInputStream fis = null;
+        // logger.info("root dir is:" + System.getProperty("properties.rootDir"));
+        // SearchManager.ROOT_DIR = System.getProperty("properties.rootDir");
+        SearchManager.ROOT_DIR = args[2];
         logger.info("reading Q values from properties file");
-        String propertiesPath = System.getProperty("properties.location");
+        // String propertiesPath = System.getProperty("properties.location");
+        String propertiesPath = Paths.get(SearchManager.ROOT_DIR,"NODE/sourcerer-cc.properties").toString();
         logger.debug("propertiesPath: " + propertiesPath);
-        fis = new FileInputStream(propertiesPath);
-        try {
+        try(FileInputStream fis = new FileInputStream(propertiesPath)) {
             properties.load(fis);
             String[] params = new String[2];
             params[0] = args[0];
@@ -326,11 +334,6 @@ public class SearchManager {
         } catch (IOException e) {
             logger.error("ERROR READING PROPERTIES FILE, " + e.getMessage());
             System.exit(1);
-        } finally {
-
-            if (null != fis) {
-                fis.close();
-            }
         }
         logger.debug(SearchManager.NODE_PREFIX + " MAX_TOKENS=" + max_tokens
                 + " MIN_TOKENS=" + min_tokens);
