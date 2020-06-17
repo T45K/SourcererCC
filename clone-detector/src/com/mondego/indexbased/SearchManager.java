@@ -307,7 +307,7 @@ public class SearchManager {
         SearchManager.ROOT_DIR = args[2];
         logger.info("reading Q values from properties file");
         // String propertiesPath = System.getProperty("properties.location");
-        String propertiesPath = Paths.get(SearchManager.ROOT_DIR,"NODE/sourcerer-cc.properties").toString();
+        String propertiesPath = args[3];
         logger.debug("propertiesPath: " + propertiesPath);
         try(FileInputStream fis = new FileInputStream(propertiesPath)) {
             properties.load(fis);
